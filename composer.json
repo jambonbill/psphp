@@ -1,0 +1,23 @@
+{
+    "name":"petscii/php",
+    "type": "project",
+    "license": "AGPLV3",
+    "authors": [
+        {
+            "name": "Jambonbill",
+            "email": "jambonbill@gmail.com",
+            "homepage": "https://www.jambonbill.org"
+        }
+    ],
+
+    "autoload": {
+        "psr-0": {
+            "PSP": "src/"
+        }
+    },
+
+    "require": {
+    	"php": ">=7.0.0",
+        "ext-gd":"*"
+    }
+}
