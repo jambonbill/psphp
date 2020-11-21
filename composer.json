@@ -1,12 +1,15 @@
 {
-    "name":"petscii/php",
-    "type": "project",
-    "license": "AGPLV3",
+    "name":"jambonbill/psphp",
+    "type": "library",
+    "description":"PETSCII for PHP",
+    "license": "MIT",
+    "keywords": ["petscii","c64","text"],
     "authors": [
         {
             "name": "Jambonbill",
             "email": "jambonbill@gmail.com",
-            "homepage": "https://www.jambonbill.org"
+            "homepage": "https://www.jambonbill.org",
+            "role":"developer"
         }
     ],
 
