@@ -1,7 +1,7 @@
 {
     "name":"jambonbill/psphp",
     "type": "library",
-    "description":"PETSCII for PHP",
+    "description":"PETSCII with PHP",
     "license": "MIT",
     "keywords": ["petscii","c64","text"],
     "authors": [
