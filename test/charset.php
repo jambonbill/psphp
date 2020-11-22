@@ -10,8 +10,8 @@ $charset=new PSP\Charset();
 //dump data
 //var_dump($charset->data());//exit;
 
-$charset->toPng("/tmp/charset-dump.png");
-//var_dump($charset->char(0));
+//$charset->toPng("/tmp/charset-dump.png");
+var_dump($charset->char(0));
 
 
 
