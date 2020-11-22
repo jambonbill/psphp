@@ -1,7 +1,7 @@
 <?php
 /**
  * PSP Screen
- * Handle Screen memory page
+ * Handle a Character Screen page
  * @version 1.0.1
  * @author jambonbill
  */
@@ -25,7 +25,7 @@ class Screen
 
     private $_colors=["#000000","#ffffff","#ab3126","#66daff","#bb3fb8","#55ce58","#1d0e97","#eaf57c","#b97418","#785300","#dd9387","#5b5b5b","#8b8b8b","#b0f4ac","#aa9def","#b8b8b8"];//default 16 colors
 
-    private $_charset=null;//pixel data?
+    //private $_charset=null;//raw charset data
     private $_bgColor=0;//black
     private $_borderColor=0;//not implemented
 
@@ -33,8 +33,8 @@ class Screen
     public function __construct(int $width, int $height)
     {
         $this->resize($width,$height);
-        $charset=new Charset();
-        $this->_charset=$charset->pixels();
+        //$charset=new Charset();
+        //$this->_charset=$charset->data();
     }
 
 
@@ -44,7 +44,7 @@ class Screen
      */
     public function PEEK(int $addr): array
     {
-        return [$this->_chars[$addr],$this->_colrs[$addr]];
+        return [$this->_chars[$addr]%256, $this->_colrs[$addr]%256];
     }
 
 
@@ -55,8 +55,8 @@ class Screen
      */
     public function POKE(int $addr, int $char, int $color): bool
     {
-        $this->_chars[$addr]=$char;
-        $this->_colrs[$addr]=$color;
+        $this->_chars[$addr]=$char%256;
+        $this->_colrs[$addr]=$color%256;
         return true;
     }
 
@@ -106,7 +106,7 @@ class Screen
 
 
     /**
-     * [bgColor description]
+     * GET/SET bgColor index
      * @param  integer $colorIndex [description]
      * @return [type]              [description]
      */
@@ -118,6 +118,12 @@ class Screen
     }
 
 
+
+    /**
+     * PSP file method
+     * @param  array  $r [description]
+     * @return [type]    [description]
+     */
     public function fromDb(array $r)
     {
         $jso=json_decode($r['json']);
@@ -137,7 +143,7 @@ class Screen
 
 
     /**
-     * Render screen to a PNG file and save at path
+     * Render screen to a PNG file
      * @param  string $path [description]
      * @return [type]       [description]
      */
@@ -173,28 +179,26 @@ class Screen
             $char=$this->_chars[$i];
             $colr=$this->_colrs[$i]%16;
             $bgColor=floor($this->_colrs[$i]/16);//CharBgColor
-
-            $PX=$this->_charset[$char%256];
-
-            if (!$PX) {
-                throw new Exception("pixels not found. char=$char", 1);
-            }
-
             // Draw BGColor Rect (colorextended)
             if ($bgColor>0) {
                 imagefilledrectangle($im, $col*8, $row*8, $col*8+8, $row*8+8, $palette[$bgColor]);
             }
 
-            foreach($PX as $p=>$pixel){
-                $x=$p%8;
-                $y=floor($p/8);
-                if ($pixel) {
-                    $color=$palette[$colr%16];
-                    imagesetpixel($im,($col*8)+$x,($row*8)+$y,$color);
-                }
+            $glyph=$this->_charset[$char%256];
+
+            if (!$glyph) {
+                throw new Exception("pixels not found. char=$char", 1);
+            }
+
+            foreach($glyph as $y=>$pixels){
+               for($x=0;$x<8;$x++){
+                    if ($pixels>>$x&1) {
+                        $color=$palette[$colr%16];
+                        imagesetpixel($im,($col*8)+$x,($row*8)+$y,$color);
+                    }
+               }
             }
         }
-
         imagepng($im, $path);
     }
 
