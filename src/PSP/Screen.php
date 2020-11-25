@@ -33,8 +33,8 @@ class Screen
     public function __construct(int $width, int $height)
     {
         $this->resize($width,$height);
-        //$charset=new Charset();
-        //$this->_charset=$charset->data();
+        $charset=new Charset();//Uppercase by default
+        $this->_charset=$charset->data();
     }
 
 
@@ -105,6 +105,8 @@ class Screen
 
 
 
+
+
     /**
      * GET/SET bgColor index
      * @param  integer $colorIndex [description]
@@ -115,6 +117,28 @@ class Screen
     {
         $this->_bgColor=$colorIndex%16;
         return $this->_bgColor;
+    }
+
+
+    /**
+     * Import screen data
+     * @param  [type] $chars  [description]
+     * @param  [type] $colors [description]
+     * @return [type]         [description]
+     */
+    public function import(array $chars, array $colors): self
+    {
+        foreach($chars as $i=>$char)
+        {
+            $this->_chars[$i]=$char;
+        }
+
+        foreach($colors as $i=>$color)
+        {
+            $this->_colrs[$i]=$color%16;
+        }
+
+        return $this;
     }
 
 
