@@ -116,16 +116,61 @@ class Charset
     }
 
 
+    private function reverse($char){
+        $binary = decbin(ord($char));
+        $binary = str_pad($binary, 8, 0, STR_PAD_LEFT);
+        $binary = strrev($binary);
+        $reversednumber= bindec($binary);
+        $reversed = pack("C", $reversednumber);
+        return $reversed;
+    }
+
+
     /**
-     * Load Raw Binary charset
-     * check http://kofler.dot.at/c64/index.html
+     * Load Raw Binary charset (64c)
+     * I think there is a way to dump custom charsets with VICE ?
+     * check http://kofler.dot.at/c64/index.html for 64c files
      * @param  string $path [description]
      * @return [type]       [description]
      */
     public function loadBinary(string $path)
     {
         //todo
-        throw new Exception("not implemented", 1);
+        if (!is_file($path)) {
+            throw new Exception("not implemented", 1);
+        }
+
+        $this->flush();
+
+        $binstring=file_get_contents($path);
+
+        //we must skip the first two bytes
+
+        //$b0=$binstring[0];
+        //$b1=$binstring[1];
+        /*
+        echo ord($binstring[0]);
+        echo " ";
+        echo ord($binstring[1]);//i assume its the number of chars in the font
+        echo "\n";
+        */
+
+        $len=strlen($binstring);
+        $charnum=floor($len/8);
+        for($i=0;$i<$charnum;$i++){
+            $this->data[$i]=new SplFixedArray(8);
+            for($y=0;$y<8;$y++){
+                $addr=2+$i*8+$y;
+                if(isset($binstring[$addr])){
+                    $char=$binstring[$addr];
+                }else{
+                    $char=' ';
+                }
+                //TODO fix `Uninitialized string offset: 465`
+                $this->data[$i][$y]=ord($this->reverse($char));
+            }
+        }
+        return $charnum;
     }
 
 
@@ -213,7 +258,7 @@ class Charset
         }
 
         $this->flush();
-
+        /*
         function reverse($char){
             $binary = decbin(ord($char));
             $binary = str_pad($binary, 8, 0, STR_PAD_LEFT);
@@ -222,17 +267,16 @@ class Charset
             $reversed = pack("C", $reversednumber);
             return $reversed;
         }
+        */
 
         for($i=0;$i<$NUM_CHARS;$i++){
             //$this->data[$i]=array(8);
             $this->data[$i]=new SplFixedArray(8);
             for($y=0;$y<8;$y++){
-                $s=reverse(fread($f, 1));
+                $s=$this->reverse(fread($f, 1));
                 $this->data[$i][$y]=ord($s);
             }
         }
-
-
     }
 
 
