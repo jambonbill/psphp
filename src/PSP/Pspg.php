@@ -9,6 +9,9 @@
 namespace PSP;
 
 use Exception;
+use SplFixedArray;
+use PSP\LZW;
+
 //use SplFixedArray;
 //use PSP\Charset;
 
@@ -24,15 +27,47 @@ class Pspg
         //$this->_charset=$charset->pixels();
     }
 
+    public function load(string $filename)
+    {
+        echo "load($filename)\n";
+        
+        $rows=file($filename);
+        $header=array_shift($rows);
+        $palette=array_shift($rows);
+
+        echo "HEADER:$header";
+        echo "PAL:$palette";
+
+        echo count($rows)." frames\n";
+        foreach($rows as $lzwdata){
+            //echo "$lzwdata";
+            //$this->decodePspg($lzwdata);
+            //exit;
+        }
+    }
+
+    public function toFrames()
+    {
+        //$screen=new PSP\Screen(16,16);
+        /*
+        for($i=0;$i<$screen->charNumber();$i++){
+            $screen->poke($i,1,$i);
+        }
+
+        echo $screen->toPng("/tmp/screen.png");
+        */
+    }
+
     /**
      * (from petscii.php) Decode a pspg frame string (B64+LZW)
      * @param  string $str [description]
      * @return [type]      [description]
      */
-    /*
-    public function decodePspg($pstr='')
+
+    public function decodePspg(string $pstr='')
     {
-        $b64str=$this->lzw_decode(trim($pstr));
+        $b64str=LZW::decode(trim($pstr));
+        
         $bstr=base64_decode($b64str);
 
         $cols=ord($bstr[0]);
@@ -43,8 +78,8 @@ class Pspg
         $dat['cols']=$cols;
         $dat['rows']=$rows;
 
-        $chars=new \SplFixedArray($cols*$rows);
-        $colrs=new \SplFixedArray($cols*$rows);
+        $chars=new SplFixedArray($cols*$rows);
+        $colrs=new SplFixedArray($cols*$rows);
         for($i=0;$i<$cols*$rows;$i++){
             $chars[$i]=ord($bstr[2+($i*2)]);
             $colrs[$i]=ord($bstr[2+($i*2)+1]);
@@ -54,7 +89,7 @@ class Pspg
         //print_r($dat);exit;
         return $this->decode($dat);
     }
-    */
+    
 
 
     /**
