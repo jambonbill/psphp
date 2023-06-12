@@ -25,7 +25,7 @@ class LZW
      * @param  string $s [description]
      * @return [type]    [description]
      */
-    public function decode(string $s): string
+    public static function decode(string $s): string
     {
 
         mb_internal_encoding('UTF-8');
