@@ -103,6 +103,34 @@ class Screen
         return $this->_colors;
     }
 
+    
+    /**
+     * Redefine color palette
+     *
+     * @param array|string $palette
+     * @return void
+     */
+    public function setColorPalette(array|string $palette)
+    {
+        
+        //$_colors=["#000000","#ffffff","#ab3126","#66daff","#bb3fb8","#55ce58","#1d0e97","#eaf57c","#b97418","#785300","#dd9387","#5b5b5b","#8b8b8b","#b0f4ac","#aa9def","#b8b8b8"];//default 16 colors
+        
+        if(is_array($palette)){
+            $this->_colors=$palette;    
+            return $this;
+        }
+
+        if (is_string($palette)) {//convert string into color palette array
+            //TODO
+            $palette=explode(",",$palette);
+            $this->_colors=$palette;
+            return $this;
+        }
+        
+        
+        
+    }
+
 
 
 
@@ -163,6 +191,44 @@ class Screen
             $colr=ord($r['bin'][$i*2+1]);
             $this->poke($i,$char,$colr);
         }
+    }
+
+    
+    /**
+     * Set frame data from given Base64 string
+     *
+     * @param string $b64str
+     * @return void
+     */
+    public function fromB64(string $b64str):bool
+    {
+        $bstr=base64_decode($b64str);
+
+        $cols=ord($bstr[0]);
+        $rows=ord($bstr[1]);
+        
+        //$this->_cols=$cols;
+        //$this->_rows=$rows;
+        $this->resize($cols, $rows);
+
+        //$dat=[];
+        //$dat['charset']='uppercase';
+        //$dat['cols']=$cols;
+        //$dat['rows']=$rows;
+
+        $chars=new SplFixedArray($cols*$rows);
+        $colrs=new SplFixedArray($cols*$rows);
+        for($i=0;$i<$cols*$rows;$i++){
+            //$chars[$i]=ord($bstr[2+($i*2)]);
+            //$colrs[$i]=ord($bstr[2+($i*2)+1]);
+            $char=ord($bstr[2+($i*2)]);
+            $colr=ord($bstr[2+($i*2)+1]);
+            $this->poke($i,$char,$colr);
+        }
+        //$dat['charData'][0]=$chars;
+        //$dat['colrData'][0]=$colrs;
+        //return $dat;
+        return true;
     }
 
 
